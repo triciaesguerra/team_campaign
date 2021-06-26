@@ -1,0 +1,12 @@
+#!/bin/bash
+
+export PROJECT_NAME="$$_campaign_unit_tests"
+export UNIT_TESTS_ENTRYPOINT="pytest --disable-pytest-warnings --tb=long $@"
+
+docker-compose --compatibility --project-directory . --project-name "${PROJECT_NAME}" --file unit_test.yml down
+docker-compose --compatibility --project-directory . --project-name "${PROJECT_NAME}" --file unit_test.yml build
+wait
+docker-compose --compatibility --project-directory . --project-name "${PROJECT_NAME}" --file unit_test.yml up --exit-code-from unit_tests
+
+# remove network
+docker network remove "${PROJECT_NAME}_default"
